@@ -17,10 +17,10 @@ public class PlayerMovement : MonoBehaviour
     public bool dragging;
 
 
-    public Gradient oi;
+    //public Gradient oi;
     void Awake()
     {
-        oi = new Gradient();
+        //oi = new Gradient();
         rb = GetComponent<Rigidbody2D>();
         cam = Camera.main;
 
