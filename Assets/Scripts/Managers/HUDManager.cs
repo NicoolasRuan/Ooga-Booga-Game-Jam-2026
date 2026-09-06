@@ -26,12 +26,24 @@ public class HUDManager : MonoBehaviour
     }
 
     public TextMeshProUGUI metersIndicator;
+    [SerializeField] private float metersPerUnit = 0f;
     public Transform cameraHeigth;
     public Image[] waterDrops;
 
+    private float startHeight;
+
+    private void Start()
+    {
+        startHeight = cameraHeigth.position.y;
+    }
+
     private void Update()
     {
-        metersIndicator.text = Mathf.FloorToInt(cameraHeigth.position.y).ToString() + "m";
+        float traveledHeight = cameraHeigth.position.y - startHeight;
+
+        int height = Mathf.FloorToInt(traveledHeight * metersPerUnit);
+        //int height = Mathf.FloorToInt(cameraHeigth.position.y * metersPerUnit);
+        metersIndicator.text = height.ToString() + "m";
     }
 
     public void UpdateWaterCharges(int charges)

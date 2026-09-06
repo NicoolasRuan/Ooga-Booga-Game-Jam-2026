@@ -359,6 +359,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HUDManager
   metersIndicator: {fileID: 711559135}
+  metersPerUnit: 10
   cameraHeigth: {fileID: 418316924}
   waterDrops:
   - {fileID: 1066640770}
@@ -617,8 +618,8 @@ MonoBehaviour:
   IgnoreTimeScale: 0
   WorldUpOverride: {fileID: 0}
   ChannelMask: -1
-  UpdateMethod: 1
-  BlendUpdateMethod: 0
+  UpdateMethod: 2
+  BlendUpdateMethod: 1
   LensModeOverride:
     Enabled: 0
     DefaultMode: 2
@@ -1230,8 +1231,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23c073c809ae5c34aadc1618c0b29a8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  impulseForce: 10
-  maxDragDistance: 3
+  impulseForce: 8
+  maxDragDistance: 2
+  launchSpeed: 20
   maxJumpCharges: 2
   playerVisual: {fileID: 2139546305}
   lineRenderer: {fileID: 2085330883}
@@ -1307,7 +1309,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0

@@ -4,7 +4,9 @@ public class PlayerMovement : MonoBehaviour
 {
 
     [SerializeField] private float impulseForce = 5f;
-    [SerializeField] private float maxDragDistance = 3f;
+    [SerializeField] private float maxDragDistance = 300f;
+
+    [SerializeField] private float launchSpeed = 12f;
 
     [SerializeField] private int maxJumpCharges = 2;
 
@@ -22,6 +24,8 @@ public class PlayerMovement : MonoBehaviour
 
     public bool dragging;
 
+    private float defaultFixedDeltaTime;
+
 
     void Awake()
     {
@@ -31,8 +35,14 @@ public class PlayerMovement : MonoBehaviour
 
         lineRenderer.enabled = false;
 
+        defaultFixedDeltaTime = Time.fixedDeltaTime;
+
         currentJumpCharges = maxJumpCharges;
 
+    }
+
+    private void Start()
+    {
         HUDManager.Instance.UpdateWaterCharges(currentJumpCharges);
     }
 
@@ -56,7 +66,8 @@ public class PlayerMovement : MonoBehaviour
 
     void StartDrag()
     {
-        Time.timeScale = 0.2f;
+        //Time.timeScale = 0.2f;
+        SetTimeScale(0.2f);
         dragging = true;
 
         startDrag = Input.mousePosition;
@@ -84,7 +95,8 @@ public class PlayerMovement : MonoBehaviour
     void ReleaseDrag()
     {
 
-        Time.timeScale = 1f;
+        //Time.timeScale = 1f;
+        SetTimeScale(1f);
 
         if (currentJumpCharges <= 0)
         {
@@ -100,17 +112,19 @@ public class PlayerMovement : MonoBehaviour
 
         //drag = Vector2.ClampMagnitude(drag, maxDragDistance);
 
+        float forcePorcentage = dragDistance / maxDragDistance;
+
         Vector2 launchDirection = -drag.normalized;
 
         RotatePlayer(launchDirection);
 
         //float forcePercentage = dragDistance / maxDragDistance;
 
-        rb.linearVelocity = Vector2.zero; // zera a vel anterior
+        //rb.linearVelocity = Vector2.zero; // zera a vel anterior
 
-        //rb.linearVelocity = launchDirection * forcePercentage * impulseForce;
+        rb.linearVelocity = launchDirection * launchSpeed * forcePorcentage;
 
-        rb.AddForce(launchDirection * dragDistance * impulseForce, ForceMode2D.Impulse);
+        //rb.AddForce(launchDirection * dragDistance * impulseForce, ForceMode2D.Impulse);
 
 
         currentJumpCharges--;
@@ -184,5 +198,13 @@ public class PlayerMovement : MonoBehaviour
             HUDManager.Instance.UpdateWaterCharges(currentJumpCharges);
             Destroy(collision.gameObject);
         }
+    }
+
+    void SetTimeScale(float scale)
+    {
+        Time.timeScale = scale;
+
+        Time.fixedDeltaTime =
+            defaultFixedDeltaTime * scale;
     }
 }
