@@ -24,6 +24,8 @@ public class PlayerMovement : MonoBehaviour
 
     public bool dragging;
 
+    public Transform cameraTarget;
+
     private float defaultFixedDeltaTime;
 
 
@@ -39,6 +41,8 @@ public class PlayerMovement : MonoBehaviour
 
         currentJumpCharges = maxJumpCharges;
 
+        rb.gravityScale = 0f;
+
     }
 
     private void Start()
@@ -48,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        GameOver();
         if (Input.GetMouseButtonDown(0) && currentJumpCharges >= 1)
         {
             StartDrag();
@@ -61,6 +66,19 @@ public class PlayerMovement : MonoBehaviour
         if(Input.GetMouseButtonUp(0) && dragging)
         {
             ReleaseDrag();
+        }
+    }
+
+    void GameOver()
+    {
+        float distance = Vector2.Distance(transform.position, cameraTarget.position);
+        if(distance > 5)
+        {
+            Destroy(gameObject);
+            GameManager.Instance.isGameOver = true;
+        } else
+        {
+            GameManager.Instance.isGameOver = false;
         }
     }
 
@@ -97,6 +115,8 @@ public class PlayerMovement : MonoBehaviour
 
         //Time.timeScale = 1f;
         SetTimeScale(1f);
+
+        rb.gravityScale = 1.4f;
 
         if (currentJumpCharges <= 0)
         {

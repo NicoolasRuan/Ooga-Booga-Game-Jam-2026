@@ -16,11 +16,14 @@ public class CameraTarget : MonoBehaviour
 
     private void LateUpdate()
     {
-        if(player.position.y > highestY)
+        if(!GameManager.Instance.isGameOver)
         {
-            highestY = player.position.y;
-        }
+            if(player.position.y > highestY)
+            {
+                highestY = player.position.y;
+            }
 
-        transform.position = new Vector3(fixedX, highestY, transform.position.z);
+            transform.position = new Vector3(fixedX, highestY, transform.position.z);
+        }
     }
 }

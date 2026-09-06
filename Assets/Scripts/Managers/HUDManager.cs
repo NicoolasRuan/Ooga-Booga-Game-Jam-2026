@@ -22,7 +22,7 @@ public class HUDManager : MonoBehaviour
         Instance = this;
 
         // Optional: Keep this object alive when switching between scenes
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     public TextMeshProUGUI metersIndicator;
@@ -30,10 +30,13 @@ public class HUDManager : MonoBehaviour
     public Transform cameraHeigth;
     public Image[] waterDrops;
 
+    public GameObject buttonObj;
+
     private float startHeight;
 
     private void Start()
     {
+        buttonObj.SetActive(false);
         startHeight = cameraHeigth.position.y;
     }
 
@@ -44,6 +47,11 @@ public class HUDManager : MonoBehaviour
         int height = Mathf.FloorToInt(traveledHeight * metersPerUnit);
         //int height = Mathf.FloorToInt(cameraHeigth.position.y * metersPerUnit);
         metersIndicator.text = height.ToString() + "m";
+
+        if(GameManager.Instance.isGameOver)
+        {
+            buttonObj.SetActive(true);
+        }
     }
 
     public void UpdateWaterCharges(int charges)
