@@ -6,6 +6,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float impulseForce = 5f;
     [SerializeField] private float maxDragDistance = 3f;
 
+    [SerializeField] private int maxJumpCharges = 2;
+
+    private int currentJumpCharges;
+
+    [SerializeField] private Transform playerVisual; // fish's visual
+
     public LineRenderer lineRenderer;
 
     private Rigidbody2D rb;
@@ -17,7 +23,6 @@ public class PlayerMovement : MonoBehaviour
     public bool dragging;
 
 
-    //public Gradient oi;
     void Awake()
     {
         //oi = new Gradient();
@@ -25,11 +30,15 @@ public class PlayerMovement : MonoBehaviour
         cam = Camera.main;
 
         lineRenderer.enabled = false;
+
+        currentJumpCharges = maxJumpCharges;
+
+        HUDManager.Instance.UpdateWaterCharges(currentJumpCharges);
     }
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && currentJumpCharges >= 1)
         {
             StartDrag();
         }
@@ -61,17 +70,28 @@ public class PlayerMovement : MonoBehaviour
 
         Vector2 drag = currentDrag - startDrag;
 
-        drag = Vector2.ClampMagnitude(-drag.normalized, maxDragDistance); // limite distancia
+        //if (drag.magnitude < 5f)
+        //    return;
+        //drag = Vector2.ClampMagnitude(-drag.normalized, maxDragDistance); // limite distancia
 
+        Vector2 launchDirection = -drag.normalized;
 
+        RotatePlayer(launchDirection);
 
-        ShowDirection(drag);
+        ShowDirection(launchDirection);
     }
 
     void ReleaseDrag()
     {
 
         Time.timeScale = 1f;
+
+        if (currentJumpCharges <= 0)
+        {
+            dragging = false;
+            lineRenderer.enabled = false;
+            return;
+        }
         currentDrag = Input.mousePosition;
 
         Vector2 drag = currentDrag - startDrag;
@@ -82,15 +102,31 @@ public class PlayerMovement : MonoBehaviour
 
         Vector2 launchDirection = -drag.normalized;
 
+        RotatePlayer(launchDirection);
+
+        //float forcePercentage = dragDistance / maxDragDistance;
+
         rb.linearVelocity = Vector2.zero; // zera a vel anterior
 
+        //rb.linearVelocity = launchDirection * forcePercentage * impulseForce;
+
         rb.AddForce(launchDirection * dragDistance * impulseForce, ForceMode2D.Impulse);
+
+
+        currentJumpCharges--;
+        HUDManager.Instance.UpdateWaterCharges(currentJumpCharges);
 
         dragging = false;
 
         lineRenderer.enabled = false;
     }
 
+    void RotatePlayer(Vector2 direction)
+    {
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+        playerVisual.rotation = Quaternion.Euler(0f, 0f, angle);
+    }
     void ShowDirection(Vector2 direction)
     {
         Vector2 start = transform.position;
@@ -129,4 +165,24 @@ public class PlayerMovement : MonoBehaviour
     //        );
     //    }
     //}
+
+    void IncreaseJump()
+    {
+        currentJumpCharges++;
+        if(currentJumpCharges > 2)
+        {
+            currentJumpCharges = 2;
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Water"))
+        {
+            //Debug.Log("OSADKOASKOD");
+            IncreaseJump();
+            HUDManager.Instance.UpdateWaterCharges(currentJumpCharges);
+            Destroy(collision.gameObject);
+        }
+    }
 }

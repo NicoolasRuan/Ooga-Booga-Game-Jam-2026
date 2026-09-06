@@ -4,7 +4,9 @@ using UnityEngine;
 public class LevelGenerator : MonoBehaviour
 {
     public Transform cameraTarget;
-    public GameObject chunck;
+    public GameObject[] easyChunks;
+    public GameObject[] mediumChunks;
+    public GameObject[] hardChunks;
 
     public float chunckHeight = 10f;
     public int chunksAhead = 5;// chunks para cima
@@ -56,10 +58,30 @@ public class LevelGenerator : MonoBehaviour
     }
     void SpawnChunk()
     {
-        GameObject chunk_ = Instantiate(chunck, new Vector3(0f, nextSpawnY, 0f), Quaternion.identity);
+        //int random_chunk = Random.Range(0, chunksPrefabs.Length);
+        //Debug.Log(random_chunk);
+        //Debug.Log(chunksPrefabs[random_chunk]);
+        GameObject chunk_ = Instantiate(GetRandomChunk(), new Vector3(0f, nextSpawnY, 0f), Quaternion.identity);
 
         chunksSpawned.Add(chunk_);
 
         nextSpawnY += chunckHeight;
+    }
+
+    GameObject GetRandomChunk()
+    {
+        float playerHeight = cameraTarget.position.y;
+
+        if(playerHeight < 100f)
+        {
+            return easyChunks[Random.Range(0, easyChunks.Length)];
+        } 
+        
+        if(playerHeight < 200f)
+        {
+            return mediumChunks[Random.Range(0, mediumChunks.Length)];
+        } 
+        
+        return hardChunks[Random.Range(0, hardChunks.Length)];
     }
 }
